@@ -2,8 +2,8 @@ import Taro from '@tarojs/taro';
 import keys from 'lodash/keys';
 import get from 'lodash/get';
 import StorageType from '@/enums/storageType';
+import { replaceTo, Pages } from '@/utils/router';
 import { WithPathOpts } from './Opts.d';
-import { replaceTo, Pages } from './router';
 
 export function convertRESTAPI(url: string, opts: WithPathOpts) {
   if (!opts || !opts.path) return url;

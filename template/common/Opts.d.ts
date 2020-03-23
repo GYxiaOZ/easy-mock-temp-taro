@@ -3,8 +3,8 @@ interface PathParam {
 }
 
 export type Opts = {
-  params: { [key: string]: string };
-  data: { [key: string]: string };
+  params?: { [key: string]: string };
+  data?: { [key: string]: string };
 };
 
 export type WithPathOpts = Opts & PathParam;

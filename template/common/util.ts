@@ -29,40 +29,41 @@ type Conf = {
 
 let timer: any = null;
 
-export default function request(conf: Conf): Promise<any> {
+export default function request(baseUrl: string): (conf: Conf) => Promise<any> {
   const token = Taro.getStorageSync(StorageType.AUTHORIZATION);
-  return new Promise((resolve, reject) => {
-    Taro.request({
-      url: conf.url,
-      data: conf.opts && conf.opts.data,
-      method: conf.method,
-      header: {
-        'content-type': 'application/json',
-        'Cache-Control': 'max-age=60', //60秒
-        Authorization: token,
-      },
-    })
-      .then(data => {
-        if (data.statusCode === 200) {
-          resolve(data);
-        } else if (
-          !get(conf, 'opts.interceptorIgnore') &&
-          (data.statusCode === 401 || data.statusCode === 403)
-        ) {
-          reject({ errMsg: (data.data && data.data.msg) || '需要登录才能完成操作' });
-          if (!timer) {
-            timer = setTimeout(() => {
-              clearTimeout(timer);
-              timer = null;
-              replaceTo(Pages.LOGIN);
-            }, 1500);
-          }
-        } else {
-          reject({ errMsg: data.data && data.data.msg });
-        }
+  return (conf: Conf) =>
+    new Promise((resolve, reject) => {
+      Taro.request({
+        url: `${baseUrl}${conf.url}`,
+        data: conf.opts && conf.opts.data,
+        method: conf.method,
+        header: {
+          'content-type': 'application/json',
+          'Cache-Control': 'max-age=60', //60秒
+          Authorization: token,
+        },
       })
-      .catch(e => {
-        reject(e);
-      });
-  });
+        .then(data => {
+          if (data.statusCode === 200) {
+            resolve(data);
+          } else if (
+            !get(conf, 'opts.interceptorIgnore') &&
+            (data.statusCode === 401 || data.statusCode === 403)
+          ) {
+            reject({ errMsg: (data.data && data.data.msg) || '需要登录才能完成操作' });
+            if (!timer) {
+              timer = setTimeout(() => {
+                clearTimeout(timer);
+                timer = null;
+                replaceTo(Pages.LOGIN);
+              }, 1500);
+            }
+          } else {
+            reject({ errMsg: data.data && data.data.msg });
+          }
+        })
+        .catch(e => {
+          reject(e);
+        });
+    });
 }

@@ -1,10 +1,10 @@
 interface PathParam {
-  path: { [key: string]: string };
+  path: { [key: string]: string | number | undefined };
 }
 
 export type Opts = {
-  params?: { [key: string]: string };
-  data?: { [key: string]: string };
+  params?: any;
+  data?: any;
 };
 
 export type WithPathOpts = Opts & PathParam;
